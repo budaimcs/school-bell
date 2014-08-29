@@ -44,6 +44,13 @@ class schoolbell_api
 		{
 			$endpoint = 'alarm';
 		}
+		else if( preg_match( "%^/print_model?$%", $uri, $param ) )
+		{
+			$buf->add( "<html><body><pre>\n" . $root->print_this( 0, true ) . "\n</pre></body></html>");
+			$req->sendReply(200, "OK", $buf);
+			echo( " 200 OK\n");
+			return true;
+		}
 		else
 		{
 			$req->sendError(404);
@@ -145,7 +152,6 @@ class schoolbell_api
 						break;
 					case 'alarms' :
 						$e = new alarm( $data );
-						print_r( $e );
 						$root->get_collection_element( 'plan', $plan_id )->get_collection_element( 'bell', $bell_id )->add_to_collection( 'alarm', $e );
 						$e->save_to_db();
 						break;
@@ -157,8 +163,10 @@ class schoolbell_api
 						break;
 
 				}
+// 				$root->print_this();
 				$this->timer->create_timers();
-				$req->sendReply(200, "OK");
+				$buf->add( $e->toJSON() . "\n");
+				$req->sendReply(200, "OK", $buf);
 				echo( " 200 OK\n");
 				break;
 			case EventHttpRequest::CMD_PUT :
@@ -203,22 +211,23 @@ class schoolbell_api
 						break;
 					case 'plan' :
 						$e = $root->remove_from_collection( 'plan', $plan_id );
-						$e->delete();
 						break;
 					case 'bell' :
 						$e = $root->get_collection_element( 'plan', $plan_id )->remove_from_collection( 'bell', $bell_id );
-						$e->delete();
 						break;
 					case 'alarm' :
 						$e = $root->get_collection_element( 'plan', $plan_id )->get_collection_element( 'bell', $bell_id )->remove_from_collection( 'alarm', $alarm_id );
-						$e->delete();
 						break;
 				}
+				$e->delete_from_db();
+				unset($e);
+// 				$root->print_this();
 				$this->timer->create_timers();
 				$req->sendReply(200, "OK");
 				echo( " 200 OK\n");
 				break;
 		}
+		return true;
 	}
 }
 ?>

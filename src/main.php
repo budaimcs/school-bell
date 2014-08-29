@@ -1,5 +1,5 @@
 <?php
-
+echo("Starting server from " . getcwd() . "...\n");
 define("ADDRESS", "127.0.0.1");
 define("PORT", 8088);
 

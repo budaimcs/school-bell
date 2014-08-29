@@ -29,7 +29,7 @@ class timer
 				{
 					foreach( (array)$bell->get_collection( 'alarm' ) as $alarm )
 					{
-						if( $alarm->get( 'active' ) == 1 and substr( $alarm->get( 'days' ), (int)date('N'), 1 ) == 1 )
+						if( $alarm->get( 'active' ) == 1 and substr( $alarm->get( 'days' ), ((int)date('N') - 1), 1 ) == 1 )
 						{
 							
 							$alert_time = strtotime( date("Y-m-d ") . $alarm->get( 'time' ) . ":00" ); 

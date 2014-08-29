@@ -29,8 +29,6 @@ class code2627_db extends ezSQL_mysql
 				$sql .= "`" . $this->escape( $key ) . "`='" . $this->escape( $value ) . "'";
 			}
 		}
-		
-		
 		return $this->query( $sql );
 	}
 	
@@ -61,6 +59,26 @@ class code2627_db extends ezSQL_mysql
 		$sql .= ")";
 		return $this->query( $sql );
 	}
+	
+	public function delete( $table, $where )
+	{
+		$sql = "DELETE FROM {$table}";
+		$first = true;
+		if( is_array( $where ) )
+		{
+			$sql .= " WHERE ";
+			foreach($where as $key=>$value)
+			{
+				if( $first != true )
+					$sql .= " and ";
+				else
+					$first = false;
+				$sql .= "`" . $this->escape( $key ) . "`='" . $this->escape( $value ) . "'";
+			}
+		}
+		return $this->query( $sql );
+	}
+
 }
 
 ?>

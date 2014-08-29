@@ -111,8 +111,19 @@ class model
 		}
 	}
 	
-	public function delete()
+	public function delete_from_db()
 	{
+		foreach( $this->__collections as $collection )
+		{
+			foreach( $this->{$collection} as $e )
+			{
+				$e->delete_from_db();
+			}
+		}
+		$this->__db->delete(
+				$this->get_table(),
+				array( "ID"=>$this->ID )
+			);
 	}
 	
 	public function toJSON()
@@ -128,7 +139,7 @@ class model
 							$output .= ",";
 					else
 						$first = false;
-					$output .= "{$property}:'{$this->$property}'";
+					$output .= "\"{$property}\":\"{$this->$property}\"";
 				}
 			}
 			$output .= "}";
@@ -213,10 +224,10 @@ class model
 		{
 			return false;
 		}
-		
-		$element = $this->$collection[ $id ];
+		echo( $collection );
+		$element = $this->{$collection}[ $id ];
 		$element->set_parent_id(get_class($this), null );
-		unset( $this->$collection[ $id ] );
+		unset( $this->{$collection}[ $id ] );
 		return $element;
 	}
 	
@@ -337,6 +348,44 @@ class model
 	public function generate_id()
 	{
 		$this->set_id( get_class( $this ) . "-" . time() . "-" . rand(1000,9999) );
+	}
+	
+	public function print_this( $level = 0, $return = false )
+	{
+		$tab = "";$out = "";
+		for( $i=0; $i<($level*3); $i++)
+			$tab .= " ";
+		$out .= ($tab . "Model: " . get_class( $this ) . "\n");
+		$out .= ($tab . "   ID: " . $this->GET('ID') . "\n");
+		$properties = array_keys( get_object_vars( $this ) ); 
+		foreach( (array)$properties as $property)
+		{
+			if( substr( $property, 0, 2 ) != "__" and !in_array( $property, (array)$this->__collections )  )
+			{
+				if( $property != 'ID')
+				{
+					$out .= ($tab . "   {$property}: " . $this->get( $property ) . "\n" );
+				}
+			}
+		}
+		foreach( (array)$this->__collections as $collection)
+		{
+			$out .= ($tab . "   Collection {$collection}:\n");
+			foreach( $this->get_collection( $collection ) as $id=>$e )
+			{
+				$out .= ( $tab . "      [{$id}]\n" );
+				$out .= $e->print_this( $level + 2, true );
+			}
+		}
+		if( $return )
+		{
+			return $out;
+		}
+		else
+		{
+			echo( $out );
+		}
+		
 	}
 }
 
