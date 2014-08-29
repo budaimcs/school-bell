@@ -1,6 +1,8 @@
 <?php
 echo("Starting server from " . getcwd() . "...\n");
 
+chdir( dirname( __FILE__ ) );
+
 require_once("config.php");
 require_once("vendor/ez_sql/ez_sql_core.php");
 require_once("vendor/ez_sql/ez_sql_mysql.php");
