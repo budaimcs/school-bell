@@ -59,6 +59,24 @@ class timer
 				}
 			}
 		}
+		
+		//Create refreshrer timer
+		$alert_time = strtotime( date("Y-m-d ") . "23:59:59" ) + 6; 
+		$delay = $alert_time - time();
+		if( $delay < 1 ) $delay = 60;
+		$timer = Event::timer
+		( 
+			$this->base,
+			function( $obj )  
+			{
+				$obj->create_timers();
+			}, 
+			$this
+		);
+		$timer->addTimer( $delay );
+		$this->timers[] = $timer; 
+		echo("Refresher have been set\n");
+		
 // 		Event::timer($base,function($timer) use (&$timer) 
 // 		{
 // 			echo("Timeout!\n");
