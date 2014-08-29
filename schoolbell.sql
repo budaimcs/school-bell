@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Aug 29, 2014 at 03:50 PM
+-- Generation Time: Aug 29, 2014 at 04:08 PM
 -- Server version: 5.5.38-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.3
 
@@ -20,30 +20,47 @@ SET time_zone = "+00:00";
 -- Database: `schoolbell`
 --
 
---
--- Dumping data for table `alarm`
---
-
-INSERT INTO `alarm` (`ID`, `bell_id`, `active`, `time`, `days`) VALUES
-(2, 2, '1', '7:47', '1111100'),
-(15, 5, '1', '9:40', '1111100'),
-(16, 5, '1', '9:41', '1111000'),
-(17, 5, '1', '9:44', '1111100');
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `bell`
+-- Table structure for table `alarm`
 --
 
-INSERT INTO `bell` (`ID`, `plan_id`, `title`, `melody`) VALUES
-(2, 1, 'Bubbles', 'bubbles.mp3'),
-(5, 1, 'BigBen', 'hourlychimebeg.mp3');
+CREATE TABLE IF NOT EXISTS `alarm` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `bell_id` int(10) unsigned NOT NULL,
+  `active` char(1) NOT NULL,
+  `time` char(5) NOT NULL,
+  `days` char(7) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `plan`
+-- Table structure for table `bell`
 --
 
-INSERT INTO `plan` (`ID`, `active`, `title`) VALUES
-(1, '1', 'Elso');
+CREATE TABLE IF NOT EXISTS `bell` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `plan_id` int(10) unsigned NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `melody` varchar(300) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `plan`
+--
+
+CREATE TABLE IF NOT EXISTS `plan` (
+  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `active` char(1) NOT NULL,
+  `title` varchar(200) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
