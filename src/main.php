@@ -1,8 +1,7 @@
 <?php
 echo("Starting server from " . getcwd() . "...\n");
-define("ADDRESS", "127.0.0.1");
-define("PORT", 8088);
 
+require_once("config.php");
 require_once("vendor/ez_sql/ez_sql_core.php");
 require_once("vendor/ez_sql/ez_sql_mysql.php");
 require_once("vendor/2627_db.php");
@@ -17,6 +16,10 @@ require_once("control/api.php");
 require_once("control/timer.php");
 require_once("control/mp3_player.php");
 
+define("ADDRESS", $listening_ip);
+define("PORT", $listening_port);
+
+
 //Create event base
 $base = new EventBase();
 
@@ -26,7 +29,7 @@ $http = new EventHttp($base);
 
 
 //Create model from DB
-$db = new code2627_db('root','kalapacs','schoolbell','localhost');
+$db = new code2627_db($db_user,$db_pass,$db_name,$db_host);
 $root = new root();
 $root->bind_to_db( $db );
 $root->load_from_db();
