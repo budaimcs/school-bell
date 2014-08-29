@@ -165,7 +165,8 @@ class schoolbell_api
 				}
 // 				$root->print_this();
 				$this->timer->create_timers();
-				$buf->add( $e->toJSON() . "\n");
+				if( is_object( $e ) )
+					$buf->add( $e->toJSON() . "\n");
 				$req->sendReply(200, "OK", $buf);
 				echo( " 200 OK\n");
 				break;
