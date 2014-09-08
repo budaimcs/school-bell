@@ -2,7 +2,7 @@
 
 class model
 {
-	protected $ID;
+	protected $ID = null;
 	
 	protected $__is_new = true;
 	protected $__is_changed = false;
@@ -20,6 +20,11 @@ class model
 	public function bind_to_db( $db )
 	{
 		$this->__db = $db;
+	}
+	
+	public function get_db()
+	{
+		return $this->__db;
 	}
 	
 	public function load_from_object( $data, $change = true )
@@ -53,14 +58,15 @@ class model
 		return true;
 	}
 	
-	public function load_from_db( $ID = null )
+	public function load_from_db( $ID = null, $resources = null )
 	{
-		
-		if( !is_null( $ID ) )
-		{
-			$row = $this->__db->get_row( "SELECT * FROM " . $this->get_table() . " WHERE `ID`='{$ID}'" );
-			$this->load_from_object( $row, false );
-		}
+		$row = $this->__db->get_row( "SELECT * FROM " . $this->get_table() . " WHERE `ID`='{$ID}'" );
+		$this->load_from_object( $row, false );
+// 		$this->fetch_collections( $resources );
+	}
+	public function fetch_collections( $resources = null )
+	{
+		$ID = $this->ID;
 		foreach( (array)$this->__collections as $c )
 		{
 			$e = new $c;
@@ -71,11 +77,18 @@ class model
 			if( is_array( $rows ) )
 			foreach( $rows as $c_ID )
 			{
-				$e = new $c;
-				$e->bind_to_db( $this->__db );
-				$e->load_from_db( $c_ID );
+				if( is_object( $resources ) and $resources->has_item( $c, $c_ID ) )
+				{
+					$e = $resources->get_item( $c, $c_ID );
+				}
+				else
+				{
+					$e = new $c;
+					$e->bind_to_db( $this->__db );
+					$e->load_from_db( $c_ID );
+				}
+				$e->fetch_collections( $resources );
 				$this->add_to_collection( $c, $e );
-				
 			}
 		}
 	}
@@ -126,7 +139,7 @@ class model
 			);
 	}
 	
-	public function toJSON()
+	public function toJSON( $with_collections = true )
 	{
 			$output = "{";
 			$first = true;
@@ -141,6 +154,16 @@ class model
 						$first = false;
 					$output .= "\"{$property}\":\"{$this->$property}\"";
 				}
+			}
+			if( $with_collections )
+			foreach( (array)$this->__collections as $collection)
+			{
+				if( !$first )
+					$output .= ",";
+				else
+					$first = false;
+
+				$output .= "\"{$collection}\":" . $this->get_collection( $collection, true, true );
 			}
 			$output .= "}";
 			return $output;
@@ -158,7 +181,7 @@ class model
 		return $a;
 	}
 	
-	public function get_collection( $collection, $json = false )
+	public function get_collection( $collection, $json = false, $with_collections = false )
 	{
 		if( !in_array( $collection, $this->__collections ) )
 			return false;
@@ -173,7 +196,7 @@ class model
 					$output .=",";
 				else
 					$first = false;
-				$output .= $element->toJSON();
+				$output .= $element->toJSON( $with_collections );
 // 				echo( $element->toJSON() . "\n" );
 			}
 			$output .= "]";
@@ -218,18 +241,38 @@ class model
 		}
 		return isset( $this->{$collection}[ $element_id ] );
 	}
+	
 	public function remove_from_collection( $collection, $id )
 	{
 		if( !in_array( $collection, $this->__collections ) )
 		{
 			return false;
 		}
-		echo( $collection );
+// 		echo( $collection );
 		$element = $this->{$collection}[ $id ];
 		$element->set_parent_id(get_class($this), null );
 		unset( $this->{$collection}[ $id ] );
 		return $element;
 	}
+	
+	public function remove_from_parents()
+	{
+		foreach( $this->__parents as $p )
+		{
+			$p->remove_from_collection( get_class( $this ), $this->get('ID') );
+		}
+	}
+	
+	public function register_to_parents( $resources )
+	{
+		foreach( $this->__parent_ids as $p=>$v )
+		{
+			$parent = $resources->get_item( $p, $this->get($v) );
+			$this->__parents[ $p ] = $parent;
+			$parent->add_to_collection( get_class( $this ), $this );
+		}
+	}
+
 	
 	public function change_collection_element_id( $collection, $old_id, $new_id )
 	{

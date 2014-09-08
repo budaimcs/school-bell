@@ -8,4 +8,7 @@ $db_host = "";
 $listening_ip = "";
 $listening_port = "";
 
+define( 'USERNAME', '' );
+define( 'PASSWORD', '' );
+
 ?>

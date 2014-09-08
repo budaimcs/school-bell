@@ -2,18 +2,121 @@
 <html>
 <head>
   <title>Schoolbell</title>
+   <link rel="stylesheet" href="/static/css/metro-bootstrap.css">
+   <link rel="stylesheet" href="/static/css/iconFont.min.css">
+   <link rel="stylesheet" href="/static/css/school-bell.css">
+   <meta charset="utf-8">
 </head>
-<body>
-	
+<body class="metro">
+	<div id="content" class="container"></div>
+	<script type="text/template" id="plan_tabs_container_template">
+		
+		<div class="schoolBell">
+		<div class="toolbar fg-white">
+			<button class="button default plan_addnew"><span class="icon-plus on-left"> Új csengetési rend</button>
+		</div>
+		<div class="tab-control" data-role="tab-control">
+			<ul class="tabs">
+			</ul>
+			<div class="frames"></div>
+		</div>
+		</div>
+	</script>
+	<script type="text/template" id="plan_tab_template">
+			<li id="tab_<%= ID %>"<% if( ID == id || ( _loop_index == 0 && id == 0 ) ) { %> class="active"<% } %>><a href="#plan_frame_<%= ID %>"><%= title %></a></li>
+	</script>
+	<script type="text/template" id="plan_frames_template">
+		<div class="frame" id="plan_frame_<%= ID %>" style="display:<% if( ID == id || ( _loop_index == 0 && id == 0 ) ) { %> block <% } else { %> none <% } %>;"></div>
+	</script>
+	<script type="text/template" id="plan_frame_template">
+		<legend>Csengetési rend adatai</legend>
+		<div class="grid fluid"><div class="row">
+			<div class="span4">
+				Csengetési rend neve: <input class="plan_title" type="text" value="<%= title %>" data-transform="input-control" />
+			</div>
+			<div class="span2">
+				<div class="input-control switch ">
+					<label>
+						Aktív
+						<input class="plan_active" type="checkbox" <% if( active == '1'  ) { %>checked<%}%>/>
+						<span class="check"></span>
+					</label>
+				</div>
+			</div>
+			</div>
+			<div class="row">
+			<div class="span6">
+				<div class="toolbar fg-white">
+					<button class="button default bell_addnew"><span class="icon-plus on-left"></span>Csengő hozzáadása</button>
+					<button class="button danger plan_delete"><span class="icon-remove on-left"></span>Csengetési rend törlése</button>
+				</div>
+			</div>
+			<legend>Csengők</legend>
+		</div></div>
+		<div class="bell-list grid fluid" id="plan_bells_<%= ID %>"><div class="row"></div></div>
+	</script>
+	<script type="text/template" id="bell_panel_template">
+			<div class="panel bell">
+				<div id="bell_panel_<%= ID %>" class="bell_panel panel-header bg-lightBlue fg-white">
+					<%= title %>
+				</div>
+				<div class="panel-content">
+					<p>Csengő neve: <input class="bell_title" type="text" value="<%= title %>" data-transform="input-control" /></p>
+					<p>Csengőhang: <input class="bell_melody" type="text" value="<%= melody %>" data-transform="input-control" /></p>
+					<div class="toolbar fg-white">
+						<button class="button default alarm_addnew"><span class="icon-plus on-left"> Időzítő</button>
+						<button class="button danger bell_delete"><span class="icon-remove on-left"></span> Csengő</button>
+					</div>
+					<legend>Időzítők</legend>
+					<div class="alarm-list listview-outlook" id="bell_alarms_<%= ID %>"></div>
+				</div>
+			</div>
+	</script>
+	<script type="text/template" id="alarm_template">
+				<div class="list-content">
+				<div class="grid fluid">
+				<div class="row">
+					<div class="span12">
+						Idő <input class="alarm_time" type="text" value="<%= time %>" data-transform="input-control" size="3"/>
+					&nbsp;
+						<div class="input-control switch"><label>Aktív <input class="alarm_active" type="checkbox" <% if( active == '1'  ) { %>checked<%}%>/><span class="check"></span></label></div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="span12">
+						Napok (H-V)<br>
+					
+						<div class="input-control checkbox"><label><input class="alarm_days" type="checkbox" <% if( days.substr(0,1) == '1' ) { %>checked<%}%>/><span class="check"></span></label></div>
+						<div class="input-control checkbox"><label><input class="alarm_days" type="checkbox" <% if( days.substr(1,1) == '1'  ) { %>checked<%}%>/><span class="check"></span></label></div>
+						<div class="input-control checkbox"><label><input class="alarm_days" type="checkbox" <% if( days.substr(2,1) == '1'  ) { %>checked<%}%>/><span class="check"></span></label></div>
+						<div class="input-control checkbox"><label><input class="alarm_days" type="checkbox" <% if( days.substr(3,1) == '1'  ) { %>checked<%}%>/><span class="check"></span></label></div>
+						<div class="input-control checkbox"><label><input class="alarm_days" type="checkbox" <% if( days.substr(4,1) == '1'  ) { %>checked<%}%>/><span class="check"></span></label></div>
+						<div class="input-control checkbox"><label><input class="alarm_days" type="checkbox" <% if( days.substr(5,1) == '1'  ) { %>checked<%}%>/><span class="check"></span></label></div>
+						<div class="input-control checkbox"><label><input class="alarm_days" type="checkbox" <% if( days.substr(6,1) == '1'  ) { %>checked<%}%>/><span class="check"></span></label></div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="offset6 span6">
+						<button class="button danger alarm_delete"><span class="icon-remove on-left"></span> Időzítő</button>
+					</div>
+				</div>
+	</script>
 	<script type="text/javascript" src="/static/script/vendor/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="/static/script/vendor/underscore-min.js"></script>
 	<script type="text/javascript" src="/static/script/vendor/backbone-min.js"></script>
 	<script type="text/javascript" src="/static/script/vendor/backbone-relational.js"></script>
+	<script type="text/javascript" src="/static/script/main.js"></script>
 	<script type="text/javascript" src="/static/script/app/models.js"></script>
 	<script type="text/javascript" src="/static/script/app/collections.js"></script>
 	<script type="text/javascript" src="/static/script/app/views.js"></script>
 	<script type="text/javascript" src="/static/script/app/rooters.js"></script>
-	<script type="text/javascript" src="/static/script/app/templates.js"></script>
-	<script type="text/javascript" src="/static/script/main.js"></script>
+<!-- 	<script type="text/javascript" src="/static/script/app/templates.js"></script> -->
+        <script type="text/javascript" src="/static/script/vendor/jquery.widget.min.js"></script>
+        <script type="text/javascript" src="/static/script/vendor/metro.min.js"></script>
+	<script type="text/javascript">
+		(function($) {
+			$.schoolBell.bootstrap();
+		})(jQuery);
+	</script>
 </body>
 </html>
