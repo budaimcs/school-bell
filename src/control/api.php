@@ -193,6 +193,10 @@ class schoolbell_api
 						}
 						else
 						{
+							if( $endpoint == 'plan' )
+							{
+								$root->remove_from_collection( 'plan', $param[1] );
+							}
 							$resources->delete_item( $endpoint, $param[1] );
 							$this->timer->create_timers();
 							$buf->add( "{}" . "\n");
