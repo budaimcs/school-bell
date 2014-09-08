@@ -28,4 +28,4 @@ node_modules
 *.mp3
 
 #Config
-src/config.php
+config.php
