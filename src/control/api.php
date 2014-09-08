@@ -118,6 +118,10 @@ class schoolbell_api
 						$resources->put_item( $model, $e );
 						$e->register_to_parents( $resources );
 						$e->fetch_collections( $resources );
+						if( $endpoint == 'plans' )
+						{
+							$root->add_to_collection( 'plan', $e );
+						}
 						break;
 					case 'plan' :
 					case 'bell' :

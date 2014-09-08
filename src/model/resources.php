@@ -12,6 +12,7 @@ class resources
 		$this->tables = $tables;
 		foreach( $tables as $table )
 		{
+			if( $table == 'root' ) continue;
 			$e = new $table;
 			$rows = $this->__db->get_results( "SELECT * FROM " . $e->get_table() );	
 			if( is_array( $rows ) )
@@ -59,6 +60,7 @@ class resources
 	
 	public function has_item( $table, $ID )
 	{
+// 		if( $table == "root" ) return true;
 		return isset( $this->items[ $table ][ $ID ] );
 	}
 	
